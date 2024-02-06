@@ -3,13 +3,23 @@ from django.contrib.auth.models import User
 
 
 class Survey(models.Model):
-    author = models.ForeignKey(to=User, null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(
+        to=User,
+        null=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
     last_update = models.DateField(auto_now=True)
     description = models.TextField(max_length=2048)
 
 
 class Question(models.Model):
-    survey = models.ForeignKey(to=Survey, on_delete=models.CASCADE)
+    survey = models.ForeignKey(
+        to=Survey,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None
+    )
     next_question = models.ForeignKey(
         to='Question',
         null=True,
@@ -25,7 +35,12 @@ class Answer(models.Model):
         null=True,
         on_delete=models.SET_NULL
     )
-    question = models.ForeignKey(to=Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(
+        to=Question,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None
+    )
     answer_text = models.TextField(max_length=2048)
     last_update = models.DateField(auto_now=True)
     

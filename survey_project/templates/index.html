@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block body %}
+        <div class="workspace">
+            <div class="home-link-panel">
+                <a href="#">Войти</a>
+                <a href="#">Зарегистрироваться</a>
+            </div>
+            <div class="home-link-panel">
+                <a href="{% url "surveys" %}">Посмотреть опросы</a>
+            </div>
+        </div>
+{% endblock body %}

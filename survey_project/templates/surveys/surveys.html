@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="workspace">
+        {% for survey in surveys %}
+            <a href="{% url "survey" survey.id %}"
+                <div class="survey-panel">
+                    <p>{{ survey.author }}</p>
+                    <p>{{ survey.last_update }}</p>
+                    <p>{{ survey.description }}</p>
+                </div>
+            </a>
+        {% empty %}
+            <div class="survey-panel">
+                <p>Опросов нет</p>
+                <p><a href="{% url "index" %}">Вернуться</a></p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock body %}
