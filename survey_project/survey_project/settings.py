@@ -34,7 +34,8 @@ SECRET_KEY = os.getenv('SETTINGS_SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+INTERNAL_IPS = ['127.0.0.1']
+SITE_ID = 1
 
 # Application definition
 
@@ -45,10 +46,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'main.apps.MainConfig',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
