@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+    {% include "utils/back_button.html" %}
+    <div class="workspace">
+        {% for question in questions %}
+            {% include "questions/question.html" with question=question %}
+        {% empty %}
+            <div class="question-panel">
+                <p>Вопросов нет</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock body %}

@@ -1,1 +1,12 @@
 {% extends "base.html" %}
+{% block body %}
+    {% include "utils/back_button.html" %}
+    <div class="workspace">
+        <div class="question-panel">
+            <p>{{ survey.author }}</p>
+            <p>{{ survey.last_update }}</p>
+            <p>{{ survey.description }}</p>
+        </div>
+        {% include 'questions/question.html' with question=survey.first_question %}
+    </div>
+{% endblock body %}

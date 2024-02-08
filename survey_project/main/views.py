@@ -1,11 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, Http404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Question, Survey, Answer
-from .utils.constants import HttpResponseCreated
+from .utils.classes import HttpResponseCreated
+from .utils.constants import EXCESS_AUTHOR_FIELDS
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -14,41 +13,52 @@ def index_view(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def survey_list(request: HttpRequest) -> HttpResponse:
-    query = """
-    SELECT *
-    FROM public.main_survey AS ms
-    ORDER BY ms.last_update DESC
-    """
-    surveys = Survey.objects.raw(query)
+    surveys = Survey.objects.all().prefetch_related('author', 'first_question')\
+        .defer(*EXCESS_AUTHOR_FIELDS).order_by('-id')
     return render(request, 'surveys/surveys.html', {'surveys': surveys})
 
+
 @login_required
-def survey_detail(request: HttpRequest) -> HttpResponse:
-    query = """
-    SELECT *
-    FROM public.main_survey AS ms
-    JOIN public.main_question AS mq
-        ON mq.survey_id = ms.id
-    WHERE ms.id = %s
-    """
-    query_params = [request.GET.get('pk')]
-    survey = Question.objects.raw(query, params=query_params)
+def survey_detail(request: HttpRequest, pk: int) -> HttpResponse:
+    survey = Survey.objects.all().prefetch_related('author', 'first_question')\
+        .defer(*EXCESS_AUTHOR_FIELDS).filter(pk=pk)[0]
+    if not survey:
+        raise Http404()
     return render(request, 'surveys/survey.html', {'survey': survey})
 
 
 @login_required
+def question_list(request: HttpRequest):
+    # TODO: Убедится что это оптимальный запрос
+    questions = Question.objects.all().prefetch_related('survey', 'depends_on')\
+        .filter(survey=None).defer(
+            'next_question',
+            'is_branching',
+            'depends_on',
+            'dependency_condition'
+        )
+    return render(request, 'questions/questions.html', {'questions': questions})
+
+
+@login_required
+def question_detail(request: HttpRequest, pk):
+    question = Question.objects.all().prefetch_related('survey', 'depends_on')\
+        .filter(pk=pk)[0]
+    if not question:
+        raise Http404()
+    return render(request, 'questions/question.html', {'question': question})
+
+
+@login_required
 def answer_create(request: HttpRequest) -> HttpResponse:
-    query = """
-    INSERT INTO public.main_answer(respondent_id, question_id, answer_text)
-    VALUES (%s, %s, %s)
-    """
-    respondent_id = request.GET.get('respondent_id', None)
-    question_id = request.GET.get('question_id', None)
-    answer_text = request.GET.get('answer_text', None)
-    query_params = [respondent_id, question_id, answer_text]
-    
-    if not all(query_params):
+    answer_text = request.POST.get('answer_text', None) 
+    question_id = request.POST.get('question_id', None)
+    if not answer_text or not question_id:
         return HttpResponseBadRequest()
-    
-    created_answer = Answer.objects.raw(query, query_params)
-    return HttpResponseCreated()
+    question = Question.objects.get(pk=int(question_id))
+    created_answer = Answer.objects.create(
+        respondent=request.user,
+        question=question,
+        answer_text=answer_text,
+    )
+    return render(request, 'questions/question_stats.html')

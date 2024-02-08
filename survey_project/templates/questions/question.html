@@ -1,0 +1,26 @@
+<div class="question-panel">
+    <p>{{ question.question_text }}</p>
+    <form 
+        hx-post="{% url "new_answer" %}" 
+        id="question_form_{{ question.id }}"
+        hx-swap="outerHTML"
+        class="question_form"
+    >
+        {% csrf_token %}
+        <input 
+            id="answer_text_{{ question.id }}" 
+            name="answer_text"
+            label="Поле для ответа"
+            placeholder="Введите Ваш ответ здесь"
+            type="text"
+            class="text-input-large"
+        >
+        <input
+            id="answer_to_{{ question.id }}"
+            name="question_id"
+            value="{{ question.id }}"
+            type="hidden"
+        >
+        <button type="submit">Отправить</button>
+    </form>
+</div>

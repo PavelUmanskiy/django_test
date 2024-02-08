@@ -13,12 +13,12 @@ class SurveyAdmin(admin.ModelAdmin):
         'description',
         'first_question'
     )
-    list_display_links = ('id', 'first_question')
+    list_display_links = ('id',)
     search_fields = ('author__username', 'description')
-    list_editable = ('author', 'description')
+    list_editable = ('author', 'description', 'first_question')
     list_filter = ('last_update', 'author')
     list_select_related = ('author', 'first_question')
-    # ordering = ('-total_answers',)
+
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):

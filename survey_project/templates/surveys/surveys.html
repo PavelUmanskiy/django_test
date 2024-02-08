@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block body %}
+    {% include "utils/back_button.html" %}
     <div class="workspace">
         {% for survey in surveys %}
-            <a href="{% url "survey" survey.id %}"
+            <a href="{% url "survey" survey.id %}">
                 <div class="survey-panel">
                     <p>{{ survey.author }}</p>
                     <p>{{ survey.last_update }}</p>

@@ -3,6 +3,9 @@ body {
     margin: 0px;
     overflow-x: hidden;
 }
+input {
+    display: block;
+}
 .workspace {
     min-height: 100vh;
     min-width: 100vw;
@@ -15,7 +18,8 @@ body {
 .base-panel,
 .question-panel,
 .home-link-panel,
-.survey-panel {
+.survey-panel,
+.back-button {
     background-color: whitesmoke;
     border: 3px solid gainsboro;
     border-radius: 20px;
@@ -26,9 +30,12 @@ body {
     min-height: 30vh;
 }
 .question-panel {
-    min-height: 80px;
-    min-width: 100px;
+    min-height: 40vh;
+    min-width: 60vw;
     margin: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .home-link-panel {
     min-width: 45vw;
@@ -37,4 +44,21 @@ body {
     flex-direction: column;
     justify-content: space-around;
     align-items: center; 
+}
+.back-button {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+.question-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.text-input-large {
+    height: 35vh;
+    min-width: 58vw;
+    word-break: break-all;
+    overflow-y: scroll;
+    text-align: center;
 }
