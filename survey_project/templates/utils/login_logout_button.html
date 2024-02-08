@@ -1,0 +1,10 @@
+<div class="back-button">
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Выйти</button>
+    </form>
+    {% else %}
+        <a href="{% url "login" %}">Войти</a>
+    {% endif %}    
+</div>

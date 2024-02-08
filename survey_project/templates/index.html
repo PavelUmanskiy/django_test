@@ -1,10 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
+{% include "utils/login_logout_button.html" with user=user%}
     <div class="workspace">
-        <div class="home-link-panel">
-            <a href="#">Войти</a>
-            <a href="#">Зарегистрироваться</a>
-        </div>
         <div class="home-link-panel">
             <a href="{% url "surveys" %}">Посмотреть опросы</a>
             <a href="{% url "questions" %}">Посмотреть вопросы</a>

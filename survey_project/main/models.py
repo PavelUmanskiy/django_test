@@ -46,6 +46,7 @@ class Question(models.Model):
         to=Survey,
         null=True,
         default=None,
+        blank=True,
         on_delete=models.CASCADE,
         related_name='questions'
     )
@@ -102,7 +103,8 @@ class Answer(models.Model):
         to=Question,
         null=True,
         default=None,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='answers'
     )
     answer_text = models.TextField(max_length=2048)
     last_update = models.DateField(auto_now=True)

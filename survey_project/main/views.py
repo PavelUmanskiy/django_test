@@ -8,7 +8,7 @@ from .utils.constants import EXCESS_AUTHOR_FIELDS
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'user': request.user})
 
 
 @login_required
@@ -30,13 +30,24 @@ def survey_detail(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def question_list(request: HttpRequest):
     # TODO: Убедится что это оптимальный запрос
-    questions = Question.objects.all().prefetch_related('survey', 'depends_on')\
-        .filter(survey=None).defer(
+    questions = (
+        Question.objects
+        .all()
+        .prefetch_related(
+            'survey',
+            'depends_on',
+            'answers',
+            'answers__respondent'
+        )
+        .filter(survey=None)
+        .exclude(answers__respondent__id=request.user.id)
+        .defer(
             'next_question',
             'is_branching',
             'depends_on',
             'dependency_condition'
         )
+    )
     return render(request, 'questions/questions.html', {'questions': questions})
 
 

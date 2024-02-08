@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="question-panel">
+    {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    {% if next %}
+        {% if user.is_authenticated %}
+        <p>Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
+        {% else %}
+        <p>Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}" class="question-form">
+        {% csrf_token %}
+        Имя пользователя:
+        {{ form.username }}
+        Пароль:
+        {{ form.password }}
+        <input type="submit" value="Войти">
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+</div>
+{% endblock body %}
