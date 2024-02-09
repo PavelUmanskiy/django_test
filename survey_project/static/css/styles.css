@@ -19,7 +19,8 @@ input {
 .question-panel,
 .home-link-panel,
 .survey-panel,
-.back-button {
+.back-button,
+.small-panel {
     background-color: whitesmoke;
     border: 3px solid gainsboro;
     border-radius: 20px;
@@ -56,9 +57,14 @@ input {
     align-items: center;
 }
 .text-input-large {
+    display: block;
     height: 35vh;
     min-width: 58vw;
     word-break: break-all;
     overflow-y: scroll;
-    text-align: center;
+    text-align: start;
+}
+.small-panel {
+    height: 20vh;
+    width: 20vw;
 }

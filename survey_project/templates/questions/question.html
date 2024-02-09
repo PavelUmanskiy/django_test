@@ -1,4 +1,8 @@
-<div class="question-panel">
+{% load custom_filters %}
+<div 
+    id="question_panel_{{ question.id }}"
+    class="question-panel"
+>
     <p>{{ question.question_text }}</p>
     <form 
         hx-post="{% url "new_answer" %}" 
@@ -7,14 +11,24 @@
         class="question_form"
     >
         {% csrf_token %}
-        <input 
-            id="answer_text_{{ question.id }}" 
-            name="answer_text"
-            label="Поле для ответа"
-            placeholder="Введите Ваш ответ здесь"
-            type="text"
-            class="text-input-large"
-        >
+        {% if question.is_choices %}
+            {% for choice in question.choices|string_split:"," %}
+                <input
+                    type="radio"
+                    name="answer_text"
+                    value={{ choice }}
+                >
+            {% endfor %}
+        {% else %}
+            <textarea 
+                id="answer_text_{{ question.id }}" 
+                name="answer_text"
+                placeholder="Введите Ваш ответ здесь"
+                class="text-input-large"
+                rows=15
+                cols=100
+            ></textarea>
+        {% endif %}
         <input
             id="answer_to_{{ question.id }}"
             name="question_id"

@@ -1,5 +1,6 @@
 <div class="back-button">
     {% if user.is_authenticated %}
+    <a href="/admin"><button>Админка</button></a>
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit">Выйти</button>

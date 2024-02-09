@@ -23,22 +23,6 @@ class Survey(models.Model):
     def __str__(self) -> str:
         str_ = f'Survey #{self.pk} by {self.author.username}'
         return str_
-    
-    @property
-    def total_answers(self) -> int:
-        with connection.cursor() as cursor:
-            query = """
-            SELECT 
-                COUNT(ma.id)
-            FROM public.main_answer AS ma
-            JOIN public.main_question AS mq
-                ON ma.question_id = mq.id
-            JOIN public.main_survey AS ms
-                ON mq.survey_id = ms.id
-            """
-            cursor.execute(query)
-            answer_count = cursor.fetchone()[0]
-            return answer_count
 
 
 class Question(models.Model):
@@ -57,17 +41,24 @@ class Question(models.Model):
         default=None,
         on_delete=models.SET_NULL
     )
+    is_choices = models.BooleanField(default=False)
+    choices = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True,
+        default=None
+    )
     question_text = models.TextField(max_length=2048)
     is_branching = models.BooleanField(default=False)  # Является вопросом с ветвлением
-    depends_on = models.ForeignKey(  # Ссылка на ответ на вопрос с ветвлением
-        to='Answer',
+    depends_on = models.ForeignKey(  # Ссылка на вопрос с ветвлением
+        to='Question',
         null=True,
         blank=True,
         default=None,
         on_delete=models.SET_NULL,
         related_name='branches'
     )
-    dependency_condition = models.TextField(  # Условие ветвления
+    right_answer = models.TextField(  # Условие ветвления
         max_length=2048,
         null=True,
         blank=True,
@@ -77,20 +68,6 @@ class Question(models.Model):
     def __str__(self) -> str:
         str_ = f'Question #{self.pk} of {self.survey}'
         return str_
-    
-    @property
-    def total_answers(self) -> int:
-        with connection.cursor() as cursor:
-            query = """
-            SELECT
-                COUNT(ma.id)
-            FROM public.main_answer AS ma
-            JOIN public.main_question AS mq
-                ON ma.question_id = mq.id
-            """
-            cursor.execute(query)
-            answer_count = cursor.fetchone()[0]
-            return answer_count
 
 
 class Answer(models.Model):

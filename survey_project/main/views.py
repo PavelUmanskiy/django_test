@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, Http404
 from django.contrib.auth.decorators import login_required
+from django.db import connection
 
 from .models import Question, Survey, Answer
-from .utils.classes import HttpResponseCreated
 from .utils.constants import EXCESS_AUTHOR_FIELDS
+from .utils.queries import QUESTION_STATS_QUERY
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -29,7 +30,6 @@ def survey_detail(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 def question_list(request: HttpRequest):
-    # TODO: Убедится что это оптимальный запрос
     questions = (
         Question.objects
         .all()
@@ -66,10 +66,51 @@ def answer_create(request: HttpRequest) -> HttpResponse:
     question_id = request.POST.get('question_id', None)
     if not answer_text or not question_id:
         return HttpResponseBadRequest()
+    
     question = Question.objects.get(pk=int(question_id))
-    created_answer = Answer.objects.create(
+    new_answer = Answer.objects.create(
         respondent=request.user,
         question=question,
         answer_text=answer_text,
     )
-    return render(request, 'questions/question_stats.html')
+    
+    context = {'question': question, 'answer': new_answer}
+    if question.next_question is not None:
+        context['next_question'] = question.next_question
+
+    elif question.is_branching:
+        next_branch = None
+        branches = question.branches.all()
+        for branch in branches:
+            if question.is_choices:
+                if (
+                    new_answer.answer_text.strip() == 
+                    question.right_answer.strip()
+                ):
+                    next_branch = branch
+                    break
+            else:
+                if (
+                    new_answer.answer_text.strip() == 
+                    branch.right_answer.strip()
+                ):
+                    next_branch = branch
+                    break
+        if next_branch is None:
+            raise Http404()
+        else:
+            context['next_question'] = next_branch
+    
+    return render(request, 'questions/next_question_button.html', context)
+
+
+@login_required
+def question_stats(request: HttpRequest) -> HttpResponse:
+    question_id = request.POST.get('question_id', None)
+    user_id = request.POST.get('user_id', None)
+    answer_id = request.POST.get('answer_id', None)
+    context = {'question_id': question_id, 'user_id': user_id}
+    with connection.cursor() as cursor:
+        cursor.execute(QUESTION_STATS_QUERY, {'question_id': question_id})
+        rows = cursor.fetchall()
+    return render(request, 'questions/question_stats.html', context)

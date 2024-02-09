@@ -1,0 +1,40 @@
+<div class="small-panel">
+    <form 
+        id="question_stats_{{ question.id }}"
+        hx-post="{% url "question_stats" %}"
+        hx-swap="outerHTML"
+    >
+        {% csrf_token %}
+        <input
+            id="stats_for_question_{{ question.id }}"
+            name="question_id"
+            value="{{ question.id }}"
+            type="hidden"
+        >
+        <input
+            id="stats_for_user_{{ user.id }}"
+            name="user_id"
+            value="{{ user.id }}"
+            type="hidden"
+        >
+        <input
+            id="stats_for_answer_{{ answer.id }}"
+            name="answer_id"
+            value="{{ answer_id }}"
+            type="hidden"
+        >
+        <button type="submit">Посмотреть статистику</button>
+    </form>
+    {% if next_question is not None %}
+        <form 
+            hx-post="{% url "question" next_question.id %}"
+            hx-swap="outerHTML"
+            hx-target="#question_panel_{{ question.id }}"
+        >
+            {% csrf_token %}
+            <button type="submit">Перейти к следуещему вопросу</button>
+        </form>
+    {% else %}
+        За этим вопросом других нет
+    {% endif %}
+</div>
