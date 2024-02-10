@@ -8,7 +8,6 @@ class SurveyAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'author',
-        'total_answers',
         'last_update',
         'description',
         'first_question'
@@ -25,12 +24,12 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'survey',
-        'total_answers',
         'next_question',
         'question_text',
         'is_branching',
         'depends_on',
         'right_answer',
+        'default_branch',
     )
     list_display_links = ('id',)
     search_fields = ('question_text', 'dependency_condition')
@@ -40,6 +39,7 @@ class QuestionAdmin(admin.ModelAdmin):
         'is_branching',
         'depends_on',
         'right_answer',
+        'default_branch',
     )
     list_filter = ('is_branching',)
     list_select_related = ('survey', 'depends_on')

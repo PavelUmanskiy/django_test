@@ -1,5 +1,5 @@
 <div class="back-button">
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and user.is_superuser%}
     <a href="/admin"><button>Админка</button></a>
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}

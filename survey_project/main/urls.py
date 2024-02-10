@@ -7,7 +7,7 @@ from .views import (
     question_list,
     question_detail,
     answer_create,
-    question_stats,
+    survey_stats,
 )
 
 urlpatterns = [
@@ -16,6 +16,6 @@ urlpatterns = [
     path('surveys/<int:pk>/', survey_detail, name='survey'),
     path('questions/', question_list, name='questions'),
     path('questions/<int:pk>/', question_detail, name='question'),
-    path('questions/stats/', question_stats, name='question_stats'),
+    path('surveys/<int:pk>/stats/', survey_stats, name='survey_stats'),
     path('answers/create/', answer_create, name='new_answer'),
 ]

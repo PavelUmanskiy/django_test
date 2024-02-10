@@ -1,0 +1,14 @@
+<div
+id="question_stats_{{ question.id }}"
+>
+    <p>Cтатистика для опроса {{ survey_id }}
+    <p>Количество участников опроса: {{ survey_stats.total_respondents }}
+    <p>Вопросы:
+    {% for question in survey_stats.questions %}
+        <p>| Ответили: {{ question.respondents_amount }}| id: {{ question.question_id }}| Отношение ответивших к общему числу участников: {{ question.resp_to_part_ratio }}|
+        <p>Ответы:
+            {% for answer in question.answers %}
+                <p style="margin-left:20px">| Вариант: "{{ answer.chosen_answer }}"| Ответили: {{ answer.answer_chosen_amount }}| Доля выбора этого ответа: {{ answer.this_answer_ratio }}|
+            {% endfor %}
+    {% endfor %}
+</div>

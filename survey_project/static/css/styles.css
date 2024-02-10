@@ -68,3 +68,9 @@ input {
     height: 20vh;
     width: 20vw;
 }
+.choice-row {
+    display: flex;
+}
+.choice-item {
+    display: block;
+}

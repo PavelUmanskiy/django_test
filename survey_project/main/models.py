@@ -39,7 +39,8 @@ class Question(models.Model):
         null=True,
         blank=True,
         default=None,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        related_name='previous_question'
     )
     is_choices = models.BooleanField(default=False)
     choices = models.CharField(
@@ -48,7 +49,12 @@ class Question(models.Model):
         blank=True,
         default=None
     )
-    question_text = models.TextField(max_length=2048)
+    question_text = models.TextField(
+        max_length=2048,
+        null=True,
+        blank=True,
+        default=None
+    )
     is_branching = models.BooleanField(default=False)  # Является вопросом с ветвлением
     depends_on = models.ForeignKey(  # Ссылка на вопрос с ветвлением
         to='Question',
@@ -58,11 +64,19 @@ class Question(models.Model):
         on_delete=models.SET_NULL,
         related_name='branches'
     )
-    right_answer = models.TextField(  # Условие ветвления
+    right_answer = models.TextField(  # Условие ветвления, если выполнено - переход на next_question
         max_length=2048,
         null=True,
         blank=True,
         default=None
+    )
+    default_branch = models.ForeignKey(  # Если условие не выполнено - переход на этот вопрос.
+        to='Question',                   # Если он NULL, опрос закончен
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.SET_NULL,
+        related_name='wrongly_answered_question'
     )
 
     def __str__(self) -> str:

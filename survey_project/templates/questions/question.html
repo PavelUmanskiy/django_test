@@ -13,11 +13,21 @@
         {% csrf_token %}
         {% if question.is_choices %}
             {% for choice in question.choices|string_split:"," %}
-                <input
-                    type="radio"
-                    name="answer_text"
-                    value={{ choice }}
-                >
+                <div class="choice-row">
+                    <input
+                        id="{{ choice }}"
+                        type="radio"
+                        name="answer_text"
+                        value={{ choice }}
+                        class="choice-item"
+                    >
+                    <label
+                        for="{{ choice }}" 
+                        class="choice-item"
+                    >
+                        {{ choice }}
+                    </label>
+                </div>
             {% endfor %}
         {% else %}
             <textarea 

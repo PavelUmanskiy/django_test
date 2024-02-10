@@ -6,6 +6,7 @@ from django.db import connection
 from .models import Question, Survey, Answer
 from .utils.constants import EXCESS_AUTHOR_FIELDS
 from .utils.queries import QUESTION_STATS_QUERY
+from .utils.data_processing import reorganize_question_stats
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -45,7 +46,6 @@ def question_list(request: HttpRequest):
             'next_question',
             'is_branching',
             'depends_on',
-            'dependency_condition'
         )
     )
     return render(request, 'questions/questions.html', {'questions': questions})
@@ -67,7 +67,8 @@ def answer_create(request: HttpRequest) -> HttpResponse:
     if not answer_text or not question_id:
         return HttpResponseBadRequest()
     
-    question = Question.objects.get(pk=int(question_id))
+    question = Question.objects\
+        .filter(pk=int(question_id)).prefetch_related('survey')[0]
     new_answer = Answer.objects.create(
         respondent=request.user,
         question=question,
@@ -97,7 +98,7 @@ def answer_create(request: HttpRequest) -> HttpResponse:
                     next_branch = branch
                     break
         if next_branch is None:
-            raise Http404()
+            context['next_question'] = question.default_branch
         else:
             context['next_question'] = next_branch
     
@@ -105,12 +106,11 @@ def answer_create(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def question_stats(request: HttpRequest) -> HttpResponse:
-    question_id = request.POST.get('question_id', None)
-    user_id = request.POST.get('user_id', None)
-    answer_id = request.POST.get('answer_id', None)
-    context = {'question_id': question_id, 'user_id': user_id}
+def survey_stats(request: HttpRequest, pk: int) -> HttpResponse:
+    context = {'survey_id': pk}
     with connection.cursor() as cursor:
-        cursor.execute(QUESTION_STATS_QUERY, {'question_id': question_id})
+        cursor.execute(QUESTION_STATS_QUERY, {'survey_id': pk})
         rows = cursor.fetchall()
-    return render(request, 'questions/question_stats.html', context)
+    stats = reorganize_question_stats(rows)
+    context['survey_stats'] = stats
+    return render(request, 'surveys/survey_stats.html', context)
