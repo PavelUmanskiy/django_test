@@ -30,6 +30,7 @@ DB_USER_PASSWORD=x4
 * x3 это ваше имя пользователя PostgreSQL (по умолчанию, `'postgres'`)
 * x4 это ваш пароль в базе данных (например, `'qwerty1234'`)
 12. Вернуться в директорию `survey_project` (где лежит файл `manage.py`)
+13. Провести миграции командами `python manage.py makemigrations` и `python manage.py migrate`
 13. Создать суперпользователя Django командой `python manage.py createsuperuser` и следовать распоряжениям в терминале (пароль вводится, этого просто не видно)
 
 # Запуск 
